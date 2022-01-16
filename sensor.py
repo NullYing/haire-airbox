@@ -8,7 +8,8 @@ from datetime import timedelta
 
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import CONF_HOST, CONF_NAME, TEMP_CELSIUS
+from homeassistant.const import (CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+                                 CONF_HOST, CONF_NAME, TEMP_CELSIUS)
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
@@ -50,7 +51,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     dev.append(AirBoxSensor(_airbox_data, name, 'temperature', TEMP_CELSIUS, 'mdi:flash-circle', "temperature"))
     dev.append(AirBoxSensor(_airbox_data, name, 'humidity', '%', 'mdi:stack-overflow', "humidity"))
     dev.append(AirBoxSensor(_airbox_data, name, 'ssd', '', 'mdi:flash-circle', ""))
-    dev.append(AirBoxSensor(_airbox_data, name, 'voc', 'mg/m³', '', ""))
+    dev.append(AirBoxSensor(_airbox_data, name, 'voc', CONCENTRATION_MICROGRAMS_PER_CUBIC_METER, '', "volatile_organic_compounds"))
     dev.append(AirBoxSensor(_airbox_data, name, 'pm25', 'μg/m³', 'mdi:flash-circle', "pm25"))
     add_devices(dev)
 
@@ -156,7 +157,7 @@ class AirBoxData(object):
                     ssd = self.comfortScore(temperature, humidity, 0.7)
                     voc = round(int(data[98]<<8|data[99])/1000,3)
                     pm25 = self.getRealPM25(int(data[97]))
-                    self.data = {'temperature': format(temperature,'.1f'), 'humidity': format(humidity,'.1f'), 'ssd': ssd, 'voc': format(voc,'.3f'), 'pm25': pm25}
+                    self.data = {'temperature': format(temperature,'.1f'), 'humidity': format(humidity,'.1f'), 'ssd': ssd, 'voc': format(voc * 1000,'.1f'), 'pm25': pm25}
                     break
 
         except Exception:
