@@ -1,0 +1,13 @@
+{
+  "domain": "airbox",
+  "name": "AirBox",
+  "config_flow": true,
+  "documentation": "",
+  "version": "0.0.3",
+  "requirements": [
+  ],
+  "dependencies": [],
+  "codeowners": [
+    "@hass_zxl"
+  ]
+}
