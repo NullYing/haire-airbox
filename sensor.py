@@ -47,17 +47,17 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     _airbox_data = AirBoxData(_air_device)
     _airbox_data.update()
     dev = list()
-    dev.append(AirBoxSensor(_airbox_data, name, 'temperature', TEMP_CELSIUS, 'mdi:flash-circle'))
-    dev.append(AirBoxSensor(_airbox_data, name, 'humidity', '%', 'mdi:stack-overflow'))
-    dev.append(AirBoxSensor(_airbox_data, name, 'ssd', '', 'mdi:flash-circle'))
-    dev.append(AirBoxSensor(_airbox_data, name, 'voc', 'mg/m³', ''))
-    dev.append(AirBoxSensor(_airbox_data, name, 'pm25', 'μg/m³', 'mdi:flash-circle'))
+    dev.append(AirBoxSensor(_airbox_data, name, 'temperature', TEMP_CELSIUS, 'mdi:flash-circle', "temperature"))
+    dev.append(AirBoxSensor(_airbox_data, name, 'humidity', '%', 'mdi:stack-overflow', "humidity"))
+    dev.append(AirBoxSensor(_airbox_data, name, 'ssd', '', 'mdi:flash-circle', ""))
+    dev.append(AirBoxSensor(_airbox_data, name, 'voc', 'mg/m³', '', ""))
+    dev.append(AirBoxSensor(_airbox_data, name, 'pm25', 'μg/m³', 'mdi:flash-circle', "pm25"))
     add_devices(dev)
 
 
 class AirBoxSensor(Entity):
     """Representation of a Sensor."""
-    def __init__(self, airbox_data, name, sensor, unit, icon):
+    def __init__(self, airbox_data, name, sensor, unit, icon, device_class):
         """Initialize the sensor."""
         self._state = None
         self._airbox_data = airbox_data
@@ -65,6 +65,7 @@ class AirBoxSensor(Entity):
         self._sensor = sensor
         self._unit = unit
         self._icon = icon
+        self._device_class = device_class
         self.update()
 
     @property
@@ -89,6 +90,11 @@ class AirBoxSensor(Entity):
     def unit_of_measurement(self):
         """Return the unit of measurement."""
         return self._unit
+
+    @property
+    def device_class(self):
+        """Return the device_class of measurement."""
+        return self._device_class
 
     def update(self):
         self._airbox_data.update()
