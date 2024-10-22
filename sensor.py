@@ -9,7 +9,8 @@ from datetime import timedelta
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
-                                 CONF_HOST, CONF_NAME, TEMP_CELSIUS)
+                                 CONF_HOST, CONF_NAME)
+from homeassistant.const import UnitOfTemperature
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
@@ -48,7 +49,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     _airbox_data = AirBoxData(_air_device)
     _airbox_data.update()
     dev = list()
-    dev.append(AirBoxSensor(_airbox_data, name, 'temperature', TEMP_CELSIUS, 'mdi:flash-circle', "temperature"))
+    dev.append(AirBoxSensor(_airbox_data, name, 'temperature', UnitOfTemperature.CELSIUS, 'mdi:flash-circle', "temperature"))
     dev.append(AirBoxSensor(_airbox_data, name, 'humidity', '%', 'mdi:stack-overflow', "humidity"))
     dev.append(AirBoxSensor(_airbox_data, name, 'ssd', '', 'mdi:flash-circle', ""))
     dev.append(AirBoxSensor(_airbox_data, name, 'voc', CONCENTRATION_MICROGRAMS_PER_CUBIC_METER, '', "volatile_organic_compounds"))
@@ -150,6 +151,7 @@ class AirBoxData(object):
             _data = self._air_device.check_sensor()
             if _data is False:
                 _LOGGER.error("Data is None")
+                return
             for data in _data:
                 if len(data) == 109 and data[2] == 0x27 and data[3] == 0x15:  # 查询的返回数据长度为109 27 15
                     temperature = self.getRealTemp(int(data[92]) << 8 | int(data[93]))#format(float(a)/float(b),'.2f')
@@ -160,7 +162,7 @@ class AirBoxData(object):
                     self.data = {'temperature': format(temperature,'.1f'), 'humidity': format(humidity,'.1f'), 'ssd': ssd, 'voc': format(voc * 1000,'.1f'), 'pm25': pm25}
                     break
 
-        except Exception:
-            _LOGGER.error("HaierAirBox get information error")
-            raise
+        except Exception as e:
+            _LOGGER.error("HaierAirBox get information error: %s", e)
+            return
 

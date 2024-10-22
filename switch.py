@@ -160,7 +160,7 @@ class AirBoxSwitch(SwitchEntity, RestoreEntity):
         except Exception as error:
             _LOGGER.error("Error during update: %s", error)
             self._is_available = False
-            raise
+            return False
 
     def _sendpacket(self, packet, retry):
         """Send packet to device."""

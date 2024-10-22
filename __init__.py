@@ -54,7 +54,7 @@ def async_setup_service(hass, host, device):
                 "No signal was received", title="AirBox Packet"
             )
 
-        hass.services.async_register(
+        hass.services.register(
             DOMAIN, SERVICE_LEARN, _learn_command, schema=SERVICE_LEARN_SCHEMA
         )
 
@@ -78,6 +78,6 @@ def async_setup_service(hass, host, device):
                 await asyncio.sleep(1)
             _LOGGER.error("Failed to send packet to device")
 
-        hass.services.async_register(
+        hass.services.register(
             DOMAIN, SERVICE_SEND, _send_packet, schema=SERVICE_SEND_SCHEMA
         )
