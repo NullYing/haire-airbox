@@ -9,6 +9,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class device(object):
+    mac = ""
+
     def __init__(self, host):
         self.host = host
         self.port = 56800
